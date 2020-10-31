@@ -1,6 +1,7 @@
 import React from "react";
 import {Card}from "react-native-elements";
 import{Text} from "react-native"
+
 function Contact(){
     return(
         

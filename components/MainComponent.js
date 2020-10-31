@@ -9,6 +9,25 @@ import About from './AboutComponent';
 import Menu from './MenuComponent';
 import Dishdetail from './DishdetailComponent';
 import Contact from './ContactComponent';
+import { connect } from 'react-redux';
+import { fetchDishes, fetchComments, fetchPromos, fetchLeaders } from '../redux/ActionCreators';
+
+const mapStateToProps = state => {
+  return {
+    dishes: state.dishes,
+    comments: state.comments,
+    promotions: state.promotions,
+    leaders: state.leaders
+  }
+}
+
+const mapDispatchToProps = dispatch => ({
+    fetchDishes: () => dispatch(fetchDishes()),
+    fetchComments: () => dispatch(fetchComments()),
+    fetchPromos: () => dispatch(fetchPromos()),
+    fetchLeaders: () => dispatch(fetchLeaders()),
+  })
+  
 
 const HomeNavigator = createStackNavigator();
 const AboutNavigator = createStackNavigator();
@@ -148,12 +167,10 @@ function MenuNavigatorScreen({ navigation }) {
            <MenuNavigator.Screen
             name="Menu"
             component={Menu}
-            options={<Icon  iconStyle={{ padding: 15 }}
-            name='menu'
-            size={24}
-            color='white'
-            onPress={() => navigation.dispatch(DrawerActions.toggleDrawer())}/>}
-        />
+            options={{
+                headerLeft: () => <StackNavigatorIcon navigation={navigation} />
+            }}/>
+            
         <MenuNavigator.Screen
             name="Dishdetail"
             component={Dishdetail}
@@ -205,9 +222,17 @@ function MainDrawerScreen() {
 }
 
 class Main extends Component {
+
+    componentDidMount() {
+        this.props.fetchDishes();
+        this.props.fetchComments();
+        this.props.fetchPromos();
+        this.props.fetchLeaders();
+      }
+      
     render() {
         return (
-            <View style={{ flex: 1, paddingTop: Platform.OS === "ios" ? 0 : Expo.Constants.statusBarHeight }}>
+            <View style={{ flex: 1 }}>
                 <NavigationContainer>
                     <MainDrawerScreen />
                 </NavigationContainer>
@@ -240,4 +265,5 @@ const styles = StyleSheet.create({
     }
 })
 
-export default Main;
+
+export default connect(mapStateToProps, mapDispatchToProps)(Main);
