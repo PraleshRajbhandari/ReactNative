@@ -9,6 +9,8 @@ import About from './AboutComponent';
 import Menu from './MenuComponent';
 import Dishdetail from './DishdetailComponent';
 import Contact from './ContactComponent';
+import Favorites from './FavoriteComponent';
+import Reservation from "./ReservationComponent";
 import { connect } from 'react-redux';
 import { fetchDishes, fetchComments, fetchPromos, fetchLeaders } from '../redux/ActionCreators';
 
@@ -33,7 +35,8 @@ const HomeNavigator = createStackNavigator();
 const AboutNavigator = createStackNavigator();
 const MenuNavigator = createStackNavigator();
 const ContactNavigator = createStackNavigator();
-
+const ReservationNavigator = createStackNavigator();
+const FavoritesNavigator   = createStackNavigator();
 const MainDrawerNavigator = createDrawerNavigator();
 
 const StackNavigatorIcon = ({ navigation }) => {
@@ -150,6 +153,55 @@ function ContactNavigatorScreen({ navigation }) {
     )
 }
 
+
+function ReservationNavigatorScreen({ navigation }) {
+    return (
+        <ReservationNavigator.Navigator
+            initialRouteName='Reservation'
+            screenOptions={{
+                headerStyle: {
+                    backgroundColor: "#512DA8"
+                },
+                headerTintColor: "#fff",
+                headerTitleStyle: {
+                    color: "#fff"
+                }
+            }}
+        >
+            <ReservationNavigator.Screen
+                name="Reservation"
+                component={Reservation}
+                options={{
+                    headerLeft: () => <StackNavigatorIcon navigation={navigation} />
+                }}
+            />
+        </ReservationNavigator.Navigator>
+    )
+}
+function FavoritesNavigatorScreen({ navigation }) {
+    return (
+        <FavoritesNavigator.Navigator
+            initialRouteName='Favorites'
+            screenOptions={{
+                headerStyle: {
+                    backgroundColor: "#512DA8"
+                },
+                headerTintColor: "#fff",
+                headerTitleStyle: {
+                    color: "#fff"
+                }
+            }}
+        >
+            <FavoritesNavigator.Screen
+                name="Favorites"
+                component={Favorites}
+                options={{
+                    headerLeft: () => <StackNavigatorIcon navigation={navigation} />
+                }}
+            />
+        </FavoritesNavigator.Navigator>
+    )
+}
 function MenuNavigatorScreen({ navigation }) {
     return (
         <MenuNavigator.Navigator
@@ -179,6 +231,7 @@ function MenuNavigatorScreen({ navigation }) {
     </MenuNavigator.Navigator>
     );
 }
+
 
 function MainDrawerScreen() {
     return (
@@ -215,6 +268,20 @@ function MainDrawerScreen() {
                 component={ContactNavigatorScreen}
                 options={{
                     drawerIcon: () => <DrawerNavigatorIcon name='address-card' size={22} />
+                }}
+            />
+             <MainDrawerNavigator.Screen
+                name="Reservation"
+                component={ReservationNavigatorScreen}
+                options={{
+                    drawerIcon: () => <DrawerNavigatorIcon name='cutlery' size={22}/>
+                }}
+            />
+             <MainDrawerNavigator.Screen
+                name="Favorites"
+                component={FavoritesNavigatorScreen}
+                options={{
+                    drawerIcon: () => <DrawerNavigatorIcon name='heart' size={22}/>
                 }}
             />
         </MainDrawerNavigator.Navigator>
