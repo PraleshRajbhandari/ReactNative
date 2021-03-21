@@ -9,6 +9,7 @@ import About from './AboutComponent';
 import Menu from './MenuComponent';
 import Dishdetail from './DishdetailComponent';
 import Contact from './ContactComponent';
+import Login from './LoginComponent';
 import Favorites from './FavoriteComponent';
 import Reservation from "./ReservationComponent";
 import { connect } from 'react-redux';
@@ -38,6 +39,7 @@ const ContactNavigator = createStackNavigator();
 const ReservationNavigator = createStackNavigator();
 const FavoritesNavigator   = createStackNavigator();
 const MainDrawerNavigator = createDrawerNavigator();
+const LoginNavigator = createStackNavigator();
 
 const StackNavigatorIcon = ({ navigation }) => {
     return (
@@ -178,6 +180,30 @@ function ReservationNavigatorScreen({ navigation }) {
         </ReservationNavigator.Navigator>
     )
 }
+function LoginNavigatorScreen({ navigation }) {
+    return (
+        <LoginNavigator.Navigator
+            initialRouteName='Login'
+            screenOptions={{
+                headerStyle: {
+                    backgroundColor: "#512DA8"
+                },
+                headerTintColor: "#fff",
+                headerTitleStyle: {
+                    color: "#fff"
+                }
+            }}
+        >
+            <LoginNavigator.Screen
+                name="Login"
+                component={Login}
+                options={{
+                    headerLeft: () => <StackNavigatorIcon navigation={navigation} />
+                }}
+            />
+        </LoginNavigator.Navigator>
+    )
+}
 function FavoritesNavigatorScreen({ navigation }) {
     return (
         <FavoritesNavigator.Navigator
@@ -193,7 +219,7 @@ function FavoritesNavigatorScreen({ navigation }) {
             }}
         >
             <FavoritesNavigator.Screen
-                name="Favorites"
+                name="Login"
                 component={Favorites}
                 options={{
                     headerLeft: () => <StackNavigatorIcon navigation={navigation} />
@@ -284,6 +310,15 @@ function MainDrawerScreen() {
                     drawerIcon: () => <DrawerNavigatorIcon name='heart' size={22}/>
                 }}
             />
+             <MainDrawerNavigator.Screen
+                name="Login"
+                component={LoginNavigatorScreen}
+                options={{
+                    drawerIcon: () => <DrawerNavigatorIcon name='sign-in' size={22}/>
+                }}
+               
+            />
+            
         </MainDrawerNavigator.Navigator>
     )
 }

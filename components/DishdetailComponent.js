@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Text, View ,Button,ScrollView,FlatList, Modal, StyleSheet, Alert, PanResponder} from 'react-native';
+import { Text, View, ScrollView, FlatList, Modal, StyleSheet, Button, Alert, PanResponder, Share } from 'react-native';
 import { Card, Icon, Rating, Input} from 'react-native-elements';
 import { connect } from 'react-redux';
 import { baseUrl } from '../shared/baseUrl';
@@ -22,46 +22,59 @@ const mapStateToProps = state => {
   function RenderDish(props) {
     
     const dish = props.dish;
-
-    const recognizeDrag = ({moveX, moveY, dx, dy}) =>{
-
-        if(dx<-20)
+ 
+    const recognizeDrag = ({ moveX, moveY, dx, dy }) => {
+        if ( dx < -20 )
             return true;
-        else 
+        else
             return false;
-    };
+    }
+
+    const recognizeComment = ({dx})=>{
+        if (dx>20)
+            return true;
+        else    
+            return false;
+    }
 
     const panResponder = PanResponder.create({
-        onStartShouldSetPanResponder: (e,gestureState)=>{
-                return true;
-        },
-        onPanResponderEnd: (e,gestureState)=>{
-            console.log("pan responder end", gestureState);
-            if(recognizeDrag(gestureState))
-                    Alert.alert(
-                        'Add To Favorites?',
-                        'Are Sure You Wish To Add' + dish.name + ' to your Favorites?',
-                        [
-                                {
-                                    text: 'Cancel',
-                                    onPress:()=>console.log('Cancel Pressed'),
-                                    style: 'cancel'
-                                },
-                                {
-                                    text: 'OK',
-                                    onPress:() => {props.favorite ? console.log('Already favorite') : props.onPress()}
-                                }
-                        ],
-                        {cancelable:false}
-                    );
-
+        onStartShouldSetPanResponder: (e, gestureState) => {
             return true;
-        }
+        },
+        onPanResponderEnd: (e, gestureState) => {
+            console.log("pan responder end", gestureState);
+            if (recognizeDrag(gestureState))
+            {
+                Alert.alert(
+                    'Add Favorite',
+                    'Are you sure you wish to add ' + dish.name + ' to favorite?',
+                    [
+                    {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
+                    {text: 'OK', onPress: () => {props.favorite ? console.log('Already favorite') : props.onPress()}},
+                    ],
+                    { cancelable: false }
+                );
+            }
+            else if(recognizeComment(gestureState)){
+                props.OnSelect();
+            }
+            return true;
+        },
     });
+
+    const shareDish= (title, message, url) =>{
+        Share.share({
+            title: title,
+            message: title + ': ' + message + ' ' + url,
+            url: url
+        },{
+            dialogTitle: 'Share ' + title
+        });
+    }
     
         if (dish != null) {
             return(
-            <Animatable.View animation="fadeInDown" duration={2000} delay={1000}
+                <Animatable.View animation="fadeInDown" duration={2000} delay={1000}
             {...panResponder.panHandlers}>
                 <Card
                 featuredTitle={dish.name}
@@ -86,6 +99,13 @@ const mapStateToProps = state => {
                     color='#512DA8'
                     onPress={()=>props.OnSelect()}
                     />
+                    <Icon
+                    raised
+                    reverse
+                    name='share'
+                    type="font-awesome"
+                    color="green"
+                    onPress={()=>shareDish(dish.name,dish.description, baseUrl + dish.image)}/>
                     </View>
                 </Card>
             </Animatable.View>

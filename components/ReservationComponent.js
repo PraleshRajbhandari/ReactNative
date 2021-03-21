@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
-import { Text, View, ScrollView, StyleSheet, Picker, Switch, Button,Modal } from 'react-native';
-import { Card } from 'react-native-elements';
-import DatePicker from 'react-native-datepicker'
+import { Text, View, ScrollView, StyleSheet, Picker, Switch, Button,Modal,Alert } from 'react-native';
+import DatePicker from 'react-native-datepicker';
+import * as Animatable from 'react-native-animatable';
+import * as Permissions from 'expo-permissions';
+import * as Notifications from 'expo-notifications';
 
 class Reservation extends Component {
 
@@ -25,7 +27,27 @@ class Reservation extends Component {
     }
 
     handleReservation() {
-        console.log(JSON.stringify(this.state));
+        const { date, guests, smoking } = this.state;
+
+        Alert.alert(
+          'Your Reservation OK?',
+          `Number of guests: ${guests}\nSmoking? ${smoking ? 'Yes' : 'No'}\nDate and Time:${date}`,
+          [
+            {
+              text: 'Cancel',
+              style: 'cancel',
+              onPress: () => this.resetForm(),
+            },
+            {
+              text: 'OK',
+              onPress: () => {
+                this.presentLocalNotification(this.state.date);
+                this.resetForm();
+              }
+            },
+          ],
+          { cancelable: false },
+        );
         this.toggleModal();
     }
     resetForm() {
@@ -36,8 +58,35 @@ class Reservation extends Component {
             showModal: false
         });
 }
+
+async obtainNotificationPermission(){
+    let permission = await Permissions.getAsync(Permissions.USER_FACING_NOTIFICATIONS)
+    if(permission.status !== 'granted'){
+        permission = await Permissions.getAsync(Permissions.USER_FACING_NOTIFICATIONS);
+        if(permission.status !=='granted'){
+            Alert.alert('Permission not granted');
+        }
+    }
+    return permission;
+}
+async presentLocalNotification(date){
+    await this.obtainNotificationPermission();
+    Notifications.presentLocalNotificationAsync({
+        title: 'Your Reservation',
+        body: 'Reservation for ' + date + " requested",
+        ios:{
+            sound: true
+        },
+        android:{
+            sound:true,
+            vibrate: true,
+            color: "#512DA8"
+        }
+    })
+}
     render() {
         return(
+            <Animatable.View animation="zoomIn" duration={2000} >
             <ScrollView>
                 <View style={styles.formRow}>
                 <Text style={styles.formLabel}>Number of Guests</Text>
@@ -113,6 +162,7 @@ class Reservation extends Component {
                     </View>
                 </Modal>
             </ScrollView>
+            </Animatable.View> 
         );
     }
 
